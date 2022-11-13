@@ -20,7 +20,7 @@ Right now I'm not sure about provisioning the the EC2 instance. Keeping with "do
 
 ## Notes
 
-### Rootless Podma
+### Rootless Podman
 
 ... is a really bad idea. LocalStack [doesn't exactly support Podman](https://docs.localstack.cloud/localstack/podman/) and requires a ton of fiddling to make happy if you're following a standard Arch rootless setup.
 
@@ -28,4 +28,4 @@ Right now I'm not sure about provisioning the the EC2 instance. Keeping with "do
 * you need to understand [the Docker flags](https://docs.localstack.cloud/localstack/configuration/#docker)
 * because you'll probably need to add [this important Podman flag](https://github.com/containers/podman/issues/14284#issuecomment-1130113553).
 
-I gave up and installed Docker on Arch because I spent three hours pulling out my hair.
+I gave up and installed Docker on Arch because I spent three hours pulling out my hair. [This issue is the root cause](https://github.com/containers/podman/issues/4900) and seems to have been erroneously closed (or they don't have good regression testing). I did all sorts of things and just couldn't get it to work because of VirtualBox USB `/dev`ices.
