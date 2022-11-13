@@ -18,6 +18,12 @@ My initial goal is to do the following
 
 Right now I'm not sure about provisioning the the EC2 instance. Keeping with "do the most complicated thing" approach, Packer to create an AMI sounds pretty neat.
 
+## Usage
+
+### Prerequisites
+
+You'll need a LocalStack Pro (trial) account. You can get one [here](https://localstack.cloud/).
+
 ## Notes
 
 ### Rootless Podman
@@ -38,7 +44,7 @@ Apparently actually [doing AMI things is behind LocalStack Pro](https://github.c
 "custom_endpoint_ec2": "http://localhost:4566"
 ```
 
-Since one of my goals was to do this without creating any accounts I'll move on for now.
+~~Since one of my goals was to do this without creating any accounts I'll move on for now.~~
 
 ### Lots to learn with CDKTF
 
