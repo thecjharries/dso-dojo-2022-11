@@ -26,6 +26,18 @@ func TestPingHandler(t *testing.T) {
 	assert.Equal(t, "pong", body["message"], "The response body should be 'pong'")
 }
 
+func TestVersionHandler(t *testing.T) {
+	router := getRouter()
+	router.GET("/version", versionHandler)
+	request := httptest.NewRequest("GET", "/version", nil)
+	response := httptest.NewRecorder()
+	router.ServeHTTP(response, request)
+	assert.Equal(t, http.StatusOK, response.Code, "The response code should be 200")
+	var body map[string]string
+	json.Unmarshal(response.Body.Bytes(), &body)
+	assert.Equal(t, "-1", body["version"], "The response body should be '-1'")
+}
+
 func TestMain(t *testing.T) {
 	go main()
 	response, err := http.Get("http://localhost:8080/ping")
