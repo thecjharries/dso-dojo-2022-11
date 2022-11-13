@@ -9,3 +9,5 @@ cdktf.log
 tsconfig.tsbuildinfo
 !jest.config.js
 !setup.js
+outputs.json
+ssh_key
