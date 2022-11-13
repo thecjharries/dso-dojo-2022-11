@@ -29,3 +29,13 @@ Right now I'm not sure about provisioning the the EC2 instance. Keeping with "do
 * because you'll probably need to add [this important Podman flag](https://github.com/containers/podman/issues/14284#issuecomment-1130113553).
 
 I gave up and installed Docker on Arch because I spent three hours pulling out my hair. [This issue is the root cause](https://github.com/containers/podman/issues/4900) and seems to have been erroneously closed (or they don't have good regression testing). I did all sorts of things and just couldn't get it to work because of VirtualBox USB `/dev`ices.
+
+### LocalStack Pro Required for Packer
+
+Apparently actually [doing AMI things is behind LocalStack Pro](https://github.com/localstack/localstack/issues/1996). Packer does seem to work pretty well minus that part provided you add this line to your `builder`:
+
+```json
+"custom_endpoint_ec2": "http://localhost:4566"
+```
+
+Since one of my goals was to do this without creating any accounts I'll move on for now.
