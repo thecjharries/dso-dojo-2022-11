@@ -9,3 +9,6 @@ build:
 
 debug:
 	@echo "VERSION=$(VERSION)"
+
+clean:
+	rm -rf bin coverage.out
