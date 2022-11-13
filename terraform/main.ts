@@ -66,8 +66,17 @@ export class MyStack extends TerraformStack {
             userData: userData.fileName,
         });
 
+        const goInstance = new Instance(this, "go", {
+            ami: "ami-000002",
+            instanceType: "t2.micro",
+        });
+
         new TerraformOutput(this, "ec2_id", {
             value: ec2Instance.id,
+        });
+
+        new TerraformOutput(this, "go_id", {
+            value: goInstance.id,
         });
     }
 }
