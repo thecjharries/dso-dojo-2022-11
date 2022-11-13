@@ -3,6 +3,8 @@ import { Construct } from "constructs";
 import { App, TerraformStack, TerraformOutput } from "cdktf";
 import { AwsProvider } from "@cdktf/provider-aws/lib/provider";
 import { Instance } from "@cdktf/provider-aws/lib/instance";
+import { TlsProvider } from "@cdktf/provider-tls/lib/provider";
+import { PrivateKey } from "@cdktf/provider-tls/lib/private-key";
 
 export class MyStack extends TerraformStack {
     constructor(scope: Construct, id: string) {
@@ -21,6 +23,14 @@ export class MyStack extends TerraformStack {
                     ec2: "http://localhost:4566",
                 }
             ]
+        });
+
+        const tlsProvider = new TlsProvider(this, "null", {});
+
+        const key = new PrivateKey(this, "key", {
+            algorithm: "RSA",
+            rsaBits: 4096,
+            provider: tlsProvider,
         });
 
         const ec2Instance = new Instance(this, "compute", {
