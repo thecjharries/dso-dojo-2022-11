@@ -27,3 +27,5 @@ Right now I'm not sure about provisioning the the EC2 instance. Keeping with "do
 * You really need [an LS profile](https://docs.localstack.cloud/localstack/configuration/#profiles) and
 * you need to understand [the Docker flags](https://docs.localstack.cloud/localstack/configuration/#docker)
 * because you'll probably need to add [this important Podman flag](https://github.com/containers/podman/issues/14284#issuecomment-1130113553).
+
+I gave up and installed Docker on Arch because I spent three hours pulling out my hair.

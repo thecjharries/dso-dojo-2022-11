@@ -1,5 +1,5 @@
 VERSION=$(shell git describe --abbrev=0 --tags)
-LOCALSTACK=CONFIG_PROFILE=2022-11 DOCKER_HOST=unix://$$XDG_RUNTIME_DIR/podman/podman.sock DOCKER_SOCK=$$XDG_RUNTIME_DIR/podman/podman.sock localstack
+LOCALSTACK=CONFIG_PROFILE=2022-11 localstack
 HOME=$(shell echo $$HOME)
 
 .PHONY: all
@@ -41,7 +41,3 @@ localstack-start: $(HOME)/.localstack/2022-11.env
 .PHONY: localstack-stop
 localstack-stop: $(HOME)/.localstack/2022-11.env
 	$(LOCALSTACK) stop
-
-.PHONY: localstack-status
-localstack-status: $(HOME)/.localstack/2022-11.env
-	$(LOCALSTACK) status
