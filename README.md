@@ -68,3 +68,9 @@ Apparently actually [doing AMI things is behind LocalStack Pro](https://github.c
 ### Lots to learn with CDKTF
 
 Following the CDKTF quick start sets up a stack. Apparently these don't work with [resource assertions](https://github.com/hashicorp/terraform-cdk/issues/1850#issuecomment-1153883827).
+
+### `cloud-init` and Docker
+
+LocalStack isn't running VMs, it's running containers. The containers don't have SystemD, so you can't do things like `systemctl start nginx` and just plain installing `nginx` doesn't do anything. Since they're not standard AMIs, either, you don't actually have `cloud-init` installed and installing it doesn't really do much since we can't do much.
+
+I'm excited with my SSH tomfoolery via Terratest so I'm just going to build another "instance" that's just a simple Go container.
