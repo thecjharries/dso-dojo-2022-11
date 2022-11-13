@@ -1,8 +1,12 @@
 FROM golang:1.19-alpine AS builder
-WORKDIR /app
-COPY . .
-RUN go mod download
 RUN apk add --no-cache git make
+WORKDIR /app
+COPY ./go.mod .
+COPY ./go.sum .
+COPY ./main.go .
+COPY ./Makefile .
+COPY ./.git .
+RUN go mod download
 RUN make build
 
 
