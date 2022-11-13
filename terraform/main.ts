@@ -8,7 +8,7 @@ export class MyStack extends TerraformStack {
     constructor(scope: Construct, id: string) {
         super(scope, id);
 
-        const provider = new AwsProvider(this, "aws", {
+        new AwsProvider(this, "aws", {
             region: "us-west-2",
             secretKey: "test",
             accessKey: "test",
@@ -26,7 +26,6 @@ export class MyStack extends TerraformStack {
         const ec2Instance = new Instance(this, "compute", {
             ami: "ami-01456a894f71116f2",
             instanceType: "t2.micro",
-            provider,
         });
 
         new TerraformOutput(this, "public_ip", {
