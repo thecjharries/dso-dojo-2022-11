@@ -41,3 +41,8 @@ localstack-start: $(HOME)/.localstack/2022-11.env
 .PHONY: localstack-stop
 localstack-stop: $(HOME)/.localstack/2022-11.env
 	$(LOCALSTACK) stop
+
+.PHONY: docker-build
+docker-build:
+	docker build -t 2022-11 .
+	docker tag 2022-11:latest localstack-ec2/alpine-ami:ami-000002
