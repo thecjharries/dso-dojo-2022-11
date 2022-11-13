@@ -1,5 +1,5 @@
 VERSION=$(shell git describe --abbrev=0 --tags)
-LOCALSTACK=CONFIG_PROFILE=2022-11 localstack
+LOCALSTACK=LOCALSTACK_API_KEY=$$LOCALSTACK_API_KEY CONFIG_PROFILE=2022-11 localstack
 HOME=$(shell echo $$HOME)
 
 .PHONY: all
