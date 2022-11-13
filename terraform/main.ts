@@ -4,7 +4,7 @@ import { App, TerraformStack, TerraformOutput } from "cdktf";
 import { AwsProvider } from "@cdktf/provider-aws/lib/provider";
 import { Instance } from "@cdktf/provider-aws/lib/instance";
 
-class MyStack extends TerraformStack {
+export class MyStack extends TerraformStack {
     constructor(scope: Construct, id: string) {
         super(scope, id);
 
