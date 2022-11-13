@@ -37,7 +37,10 @@ cd path/to/repo/root
 make test
 
 # For the infrastructure as code
+make localstack-start
+make docker-build
 cd terraform
+make prep
 make test
 ```
 

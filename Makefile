@@ -36,6 +36,7 @@ $(HOME)/.localstack/2022-11.env:
 
 .PHONY: localstack-start
 localstack-start: $(HOME)/.localstack/2022-11.env
+	docker pull localstack/localstack
 	$(LOCALSTACK) start --detached
 
 .PHONY: localstack-stop
