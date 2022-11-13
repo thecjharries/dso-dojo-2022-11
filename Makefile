@@ -4,5 +4,8 @@ test:
 	go test -v -coverprofile=coverage.out ./...
 	go tool cover -func=coverage.out
 
+build:
+	go build -ldflags "-X main.Version=$(VERSION)" -o "bin/server-$(VERSION)" main.go
+
 debug:
 	@echo "VERSION=$(VERSION)"
