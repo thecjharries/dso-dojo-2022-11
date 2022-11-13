@@ -39,3 +39,7 @@ Apparently actually [doing AMI things is behind LocalStack Pro](https://github.c
 ```
 
 Since one of my goals was to do this without creating any accounts I'll move on for now.
+
+### Lots to learn with CDKTF
+
+Following the CDKTF quick start sets up a stack. Apparently these don't work with [resource assertions](https://github.com/hashicorp/terraform-cdk/issues/1850#issuecomment-1153883827).
