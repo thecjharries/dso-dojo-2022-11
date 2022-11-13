@@ -18,3 +18,7 @@ ssh_key: outputs.json
 clean:
 	cdktf destroy
 	docker rmi localstack-ec2/ubuntu-focal-ami:ami-000001
+
+.PHONY: ssh
+ssh: ssh_key
+	ssh -i ssh_key -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -p $(shell docker ps -a --format '{{ json . }}' | jq -s . | jq '.[] | select(.Names | contains("'$(shell jq -r '.terraform.ec2_id' outputs.json)'")) | .Ports' | sed -E 's@^.*0.0:(.*)->22/tcp,.*@\1@') root@127.0.0.1

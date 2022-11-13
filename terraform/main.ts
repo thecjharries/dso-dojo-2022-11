@@ -55,18 +55,14 @@ export class MyStack extends TerraformStack {
         });
 
         const ec2Instance = new Instance(this, "compute", {
-            ami: "ami-01456a894f71116f2",
+            ami: "ami-000001",
             instanceType: "t2.micro",
             keyName: keyPair.keyName,
         });
 
-        new TerraformOutput(this, "public_ip", {
-            value: ec2Instance.publicIp,
+        new TerraformOutput(this, "ec2_id", {
+            value: ec2Instance.id,
         });
-
-        new TerraformOutput(this, "ec2_dns", {
-            value: ec2Instance.publicDns,
-        })
     }
 }
 
