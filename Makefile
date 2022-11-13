@@ -10,7 +10,7 @@ test:
 
 .PHONY: build
 build:
-	go build -ldflags "-X main.Version=$(VERSION)" -o "bin/server-$(VERSION)" main.go
+	go build -ldflags "-X main.Version=$(VERSION)" -o "bin/server" main.go
 
 .PHONY: debug
 debug:
