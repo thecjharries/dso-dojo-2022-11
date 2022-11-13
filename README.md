@@ -22,7 +22,26 @@ Right now I'm not sure about provisioning the the EC2 instance. Keeping with "do
 
 ### Prerequisites
 
-You'll need a LocalStack Pro (trial) account. You can get one [here](https://localstack.cloud/).
+You'll need a LocalStack Pro (trial) account. You can get one [here](https://localstack.cloud/). You'll also need to export the environment variable.
+
+```bash
+export LOCALSTACK_API_KEY=your-api-key
+```
+
+### Testing
+
+```bash
+cd path/to/repo/root
+
+# For the server itself
+make test
+
+# For the infrastructure as code
+cd terraform
+make test
+```
+
+
 
 ## Notes
 
