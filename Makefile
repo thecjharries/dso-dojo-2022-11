@@ -19,3 +19,9 @@ debug:
 .PHONY: clean
 clean:
 	rm -rf bin coverage.out
+
+# Needed on Arch
+# https://github.com/nektos/act/issues/303#issuecomment-962403508
+.PHONY: act
+act:
+	act --container-daemon-socket $$XDG_RUNTIME_DIR/podman/podman.sock
