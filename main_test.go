@@ -25,3 +25,13 @@ func TestPingHandler(t *testing.T) {
 	json.Unmarshal(response.Body.Bytes(), &body)
 	assert.Equal(t, "pong", body["message"], "The response body should be 'pong'")
 }
+
+func TestMain(t *testing.T) {
+	go main()
+	response, err := http.Get("http://localhost:8080/ping")
+	assert.Nil(t, err, "The response should not be nil")
+	assert.Equal(t, http.StatusOK, response.StatusCode, "The response code should be 200")
+	var body map[string]string
+	json.NewDecoder(response.Body).Decode(&body)
+	assert.Equal(t, "pong", body["message"], "The response body should be 'pong'")
+}
