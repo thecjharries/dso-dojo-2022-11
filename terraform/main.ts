@@ -41,6 +41,10 @@ export class MyStack extends TerraformStack {
         new TerraformOutput(this, "public_ip", {
             value: ec2Instance.publicIp,
         });
+
+        new TerraformOutput(this, "public_key", {
+            value: key.publicKeyPem,
+        })
     }
 }
 
