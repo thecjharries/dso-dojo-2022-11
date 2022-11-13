@@ -1,4 +1,5 @@
 VERSION=$(shell git describe --abbrev=0 --tags)
+LOCALSTACK=DOCKER_HOST=unix://$$XDG_RUNTIME_DIR/podman/podman.sock DOCKER_SOCK=$$XDG_RUNTIME_DIR/podman/podman.sock localstack --profile=2022-11
 
 .PHONY: all
 all: test build
@@ -25,3 +26,14 @@ clean:
 .PHONY: act
 act:
 	act --container-daemon-socket $$XDG_RUNTIME_DIR/podman/podman.sock
+
+.PHONY: localstack-start
+localstack-start:
+	rm -rf ~/.localstack/2022-11.env
+	mkdir -p ~/.localstack
+	cp 2022-11.env ~/.localstack/2022-11.env
+	$(LOCALSTACK) start --detached
+
+.PHONY: localstack-stop
+localstack-stop:
+	$(LOCALSTACK) stop
