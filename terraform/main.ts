@@ -19,14 +19,14 @@ export class DsoDojo202211 extends TerraformStack {
 
         const tlsProvider = new TlsProvider(this, "null", {});
 
+        // Don't do this in production
+        // https://registry.terraform.io/providers/hashicorp/tls/latest/docs/resources/private_key
         const key = new PrivateKey(this, "key", {
             algorithm: "RSA",
             rsaBits: 4096,
             provider: tlsProvider,
         });
 
-        // Don't do this in production
-        // https://registry.terraform.io/providers/hashicorp/tls/latest/docs/resources/private_key
         const keyPair = new KeyPair(this, "keypair", {
             keyName: "DSO Dojo 2022-11",
             publicKey: key.publicKeyOpenssh,
