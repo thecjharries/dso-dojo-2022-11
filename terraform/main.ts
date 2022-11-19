@@ -7,7 +7,7 @@ import { KeyPair } from "@cdktf/provider-aws/lib/key-pair";
 import { TlsProvider } from "@cdktf/provider-tls/lib/provider";
 import { PrivateKey } from "@cdktf/provider-tls/lib/private-key";
 import { DataAwsAmi } from "@cdktf/provider-aws/lib/data-aws-ami";
-import { DataAwsSecurityGroup } from "@cdktf/provider-aws/lib/data-aws-security-group";
+import { SecurityGroup } from "@cdktf/provider-aws/lib/security-group";
 
 export class DsoDojo202211 extends TerraformStack {
     constructor(scope: Construct, id: string) {
@@ -60,8 +60,37 @@ export class DsoDojo202211 extends TerraformStack {
             value: ami.id,
         });
 
-        const securityGroup = new DataAwsSecurityGroup(this, "security_group", {
-            name: "default",
+        const securityGroup = new SecurityGroup(this, "security_group", {
+            name: "DSO Dojo 2022-11",
+            description: "DSO Dojo 2022-11",
+            ingress: [
+                {
+                    protocol: "tcp",
+                    fromPort: 80,
+                    toPort: 80,
+                    cidrBlocks: ["0.0.0.0/0"]
+                },
+                {
+                    protocol: "tcp",
+                    fromPort: 22,
+                    toPort: 22,
+                    cidrBlocks: ["0.0.0.0/0"]
+                },
+                {
+                    protocol: "tcp",
+                    fromPort: 443,
+                    toPort: 443,
+                    cidrBlocks: ["0.0.0.0/0"]
+                },
+            ],
+            egress: [
+                {
+                    protocol: "-1",
+                    fromPort: 0,
+                    toPort: 0,
+                    cidrBlocks: ["0.0.0.0/0"]
+                }
+            ],
         });
 
         new TerraformOutput(this, "security_group_id", {
@@ -73,7 +102,7 @@ export class DsoDojo202211 extends TerraformStack {
             instanceType: "t2.micro",
             keyName: keyPair.keyName,
             associatePublicIpAddress: true,
-            securityGroups: [securityGroup.name],
+            vpcSecurityGroupIds: [securityGroup.id],
         });
 
         new TerraformOutput(this, "ec2_id", {
