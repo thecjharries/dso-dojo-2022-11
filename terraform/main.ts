@@ -6,6 +6,7 @@ import { Instance } from "@cdktf/provider-aws/lib/instance";
 import { KeyPair } from "@cdktf/provider-aws/lib/key-pair";
 import { TlsProvider } from "@cdktf/provider-tls/lib/provider";
 import { PrivateKey } from "@cdktf/provider-tls/lib/private-key";
+import { DataAwsAmi } from "@cdktf/provider-aws/lib/data-aws-ami";
 
 export class DsoDojo202211 extends TerraformStack {
     constructor(scope: Construct, id: string) {
@@ -43,8 +44,23 @@ export class DsoDojo202211 extends TerraformStack {
             sensitive: true,
         });
 
+        const ami = new DataAwsAmi(this, "ami", {
+            mostRecent: true,
+            owners: ["self"],
+            filter: [
+                {
+                    name: "name",
+                    values: ["dso-dojo-202211"],
+                },
+            ],
+        });
+
+        new TerraformOutput(this, "ami_id", {
+            value: ami.id,
+        });
+
         const ec2Instance = new Instance(this, "compute", {
-            ami: "ami-000001",
+            ami: ami.id,
             instanceType: "t2.micro",
             keyName: keyPair.keyName,
         });
