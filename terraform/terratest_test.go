@@ -5,8 +5,10 @@ import (
 	"io/ioutil"
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/gruntwork-io/terratest/modules/logger"
+	"github.com/gruntwork-io/terratest/modules/retry"
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	test_structure "github.com/gruntwork-io/terratest/modules/test-structure"
 
@@ -19,7 +21,7 @@ type PingResponse struct {
 	Message string `json:"message"`
 }
 
-func TestTerraformMyStack(t *testing.T) {
+func TestDsoDojo202211(t *testing.T) {
 	tempTestFolder := test_structure.CopyTerraformFolderToTemp(t, "./cdktf.out/stacks/terraform", ".")
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: tempTestFolder,
@@ -35,7 +37,7 @@ func TestTerraformMyStack(t *testing.T) {
 	privateKey := terraform.Output(t, terraformOptions, "private_key")
 	assert.NotEmpty(t, privateKey, "A private key should exist")
 
-	host := ec2Ip
+	host := ec2Ip + ":22"
 	user := "ubuntu"
 	pKey := []byte(privateKey)
 
@@ -50,27 +52,39 @@ func TestTerraformMyStack(t *testing.T) {
 		},
 	}
 
-	conn, err := ssh.Dial("tcp", host, conf)
-	assert.NoError(t, err, "Failed to dial")
-	defer conn.Close()
+	_, err = retry.DoWithRetryE(t, "Running SSH test", 6, 10*time.Second, func() (string, error) {
+		client, err := ssh.Dial("tcp", host, conf)
+		if err != nil {
+			return "", err
+		}
+		defer client.Close()
 
-	session, err := conn.NewSession()
-	assert.NoError(t, err, "Failed to create session")
-	defer session.Close()
+		session, err := client.NewSession()
+		assert.NoError(t, err, "Failed to create session")
+		defer session.Close()
 
-	hostname, err := session.Output("hostname")
-	assert.NoError(t, err, "Failed to get hostname")
-	logger.Log(t, "Remote hostname: ", string(hostname))
-	assert.NotEmpty(t, string(hostname), "A hostname should exist")
+		hostname, err := session.Output("hostname")
+		assert.NoError(t, err, "Failed to get hostname")
+		logger.Log(t, "Remote hostname: ", string(hostname))
+		assert.NotEmpty(t, string(hostname), "A hostname should exist")
+		return "", nil
+	})
+	assert.NoError(t, err, "Failed to SSH")
 
-	reponse, err := http.Get(ec2Ip + "/ping")
-	assert.NoError(t, err, "Failed to get ping")
-	defer reponse.Body.Close()
+	_, err = retry.DoWithRetryE(t, "Running GET test", 6, 10*time.Second, func() (string, error) {
+		reponse, err := http.Get("http://" + ec2Ip + "/ping")
+		if err != nil {
+			return "", err
+		}
+		defer reponse.Body.Close()
 
-	body, err := ioutil.ReadAll(reponse.Body)
-	assert.NoError(t, err, "Failed to read response")
-	var pingResponse PingResponse
-	err = json.Unmarshal(body, &pingResponse)
-	assert.NoError(t, err, "Failed to unmarshal response")
-	assert.Equal(t, "pong", pingResponse.Message, "Ping response should be pong")
+		body, err := ioutil.ReadAll(reponse.Body)
+		assert.NoError(t, err, "Failed to read response")
+		var pingResponse PingResponse
+		err = json.Unmarshal(body, &pingResponse)
+		assert.NoError(t, err, "Failed to unmarshal response")
+		assert.Equal(t, "pong", pingResponse.Message, "Ping response should be pong")
+		return "", nil
+	})
+	assert.NoError(t, err, "Failed to hit server")
 }
