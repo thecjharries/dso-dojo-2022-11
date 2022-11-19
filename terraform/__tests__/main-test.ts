@@ -4,7 +4,7 @@ import "cdktf/lib/testing/adapters/jest"; // Load types for expect matchers
 import { Testing } from "cdktf";
 import { DsoDojo202211 } from "../main";
 
-describe("My CDKTF Application", () => {
+describe("DSO Dojo 2022-11", () => {
     describe("Checking validity", () => {
         it("check if the produced terraform configuration is valid", () => {
             const app = Testing.app();
