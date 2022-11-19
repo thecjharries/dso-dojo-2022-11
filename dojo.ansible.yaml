@@ -1,0 +1,107 @@
+---
+- name: Provision the Dojo image
+  hosts: all
+  become: true
+  remote_user: ubuntu
+
+  tasks:
+    - name: Update and upgrade system packages
+      ansible.builtin.apt:
+        update_cache: true
+        force_apt_get: true
+        upgrade: dist
+        cache_valid_time: 3600
+      become: true
+
+    - name: Install NGINX
+      ansible.builtin.apt:
+        force_apt_get: true
+        name: nginx
+        state: present
+      become: true
+
+    - name: Remove default NGINX site
+      ansible.builtin.file:
+        path: /etc/nginx/sites-enabled/default
+        state: absent
+      become: true
+
+    - name: Create NGINX server file
+      ansible.builtin.copy:
+        dest: /etc/nginx/sites-available/dojo
+        owner: root
+        group: root
+        mode: u=rw,g=r,o=r
+        content: |
+          server {
+            listen 80;
+            location / {
+              proxy_pass http://127.0.0.1:8080;
+            }
+          }
+      become: true
+
+    - name: Test NGINX configuration
+      ansible.builtin.command: nginx -t
+      changed_when: false
+      become: true
+
+    - name: Enable NGINX server file
+      ansible.builtin.file:
+        src: /etc/nginx/sites-available/dojo
+        dest: /etc/nginx/sites-enabled/dojo
+        state: link
+      become: true
+
+    - name: Set up server dir
+      ansible.builtin.file:
+        path: /srv/dojo
+        state: directory
+        owner: root
+        group: root
+        mode: ugo=rwx
+      become: true
+
+    - name: Download Dojo
+      ansible.builtin.get_url:
+        url: https://github.com/thecjharries/dso-dojo-2022-11/releases/download/0.0.1/server
+        dest: /srv/dojo/server
+        mode: u=rwx,g=rx,o=rx
+      become: true
+
+    - name: Create Dojo service file
+      ansible.builtin.copy:
+        dest: /etc/systemd/system/dojo.service
+        owner: root
+        group: root
+        mode: u=rw,g=r,o=r
+        content: |
+          [Unit]
+          Description=DSO Dojo 2022-11
+          After=network.target
+
+          [Service]
+          Type=simple
+          WorkingDirectory=/srv/dojo
+          ExecStart=/srv/dojo/server
+          User=root
+          Group=root
+
+          [Install]
+          WantedBy=multi-user.target
+      become: true
+
+    - name: Reload systemd unit files
+      ansible.builtin.systemd:
+        daemon_reload: true
+      become: true
+
+    - name: Start and enable services
+      ansible.builtin.systemd:
+        name: "{{ item }}"
+        state: started
+        enabled: true
+      become: true
+      loop:
+        - nginx
+        - dojo
