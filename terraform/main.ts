@@ -7,7 +7,7 @@ import { KeyPair } from "@cdktf/provider-aws/lib/key-pair";
 import { TlsProvider } from "@cdktf/provider-tls/lib/provider";
 import { PrivateKey } from "@cdktf/provider-tls/lib/private-key";
 
-export class MyStack extends TerraformStack {
+export class DsoDojo202211 extends TerraformStack {
     constructor(scope: Construct, id: string) {
         super(scope, id);
 
@@ -56,5 +56,5 @@ export class MyStack extends TerraformStack {
 }
 
 const app = new App();
-new MyStack(app, "terraform");
+new DsoDojo202211(app, "terraform");
 app.synth();
