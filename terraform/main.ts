@@ -7,6 +7,7 @@ import { KeyPair } from "@cdktf/provider-aws/lib/key-pair";
 import { TlsProvider } from "@cdktf/provider-tls/lib/provider";
 import { PrivateKey } from "@cdktf/provider-tls/lib/private-key";
 import { DataAwsAmi } from "@cdktf/provider-aws/lib/data-aws-ami";
+import { DataAwsSecurityGroup } from "@cdktf/provider-aws/lib/data-aws-security-group";
 
 export class DsoDojo202211 extends TerraformStack {
     constructor(scope: Construct, id: string) {
@@ -59,11 +60,20 @@ export class DsoDojo202211 extends TerraformStack {
             value: ami.id,
         });
 
+        const securityGroup = new DataAwsSecurityGroup(this, "security_group", {
+            name: "default",
+        });
+
+        new TerraformOutput(this, "security_group_id", {
+            value: securityGroup.id,
+        });
+
         const ec2Instance = new Instance(this, "compute", {
             ami: ami.id,
             instanceType: "t2.micro",
             keyName: keyPair.keyName,
             associatePublicIpAddress: true,
+            securityGroups: [securityGroup.name],
         });
 
         new TerraformOutput(this, "ec2_id", {
