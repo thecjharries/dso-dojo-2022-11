@@ -1,12 +1,11 @@
 
 import { Construct } from "constructs";
-import { App, TerraformAsset, TerraformStack, TerraformOutput } from "cdktf";
+import { App, TerraformStack, TerraformOutput } from "cdktf";
 import { AwsProvider } from "@cdktf/provider-aws/lib/provider";
 import { Instance } from "@cdktf/provider-aws/lib/instance";
 import { KeyPair } from "@cdktf/provider-aws/lib/key-pair";
 import { TlsProvider } from "@cdktf/provider-tls/lib/provider";
 import { PrivateKey } from "@cdktf/provider-tls/lib/private-key";
-import * as path from "path";
 
 export class MyStack extends TerraformStack {
     constructor(scope: Construct, id: string) {
@@ -14,17 +13,6 @@ export class MyStack extends TerraformStack {
 
         new AwsProvider(this, "aws", {
             region: "us-west-2",
-            secretKey: "test",
-            accessKey: "test",
-            skipCredentialsValidation: true,
-            skipMetadataApiCheck: "true",
-            skipRequestingAccountId: true,
-            s3UsePathStyle: true,
-            endpoints: [
-                {
-                    ec2: "http://localhost:4566",
-                }
-            ]
         });
 
         const tlsProvider = new TlsProvider(this, "null", {});
@@ -55,28 +43,14 @@ export class MyStack extends TerraformStack {
             sensitive: true,
         });
 
-        const userData = new TerraformAsset(this, "user_data", {
-            path: path.resolve(__dirname, "user_data.yaml"),
-        });
-
         const ec2Instance = new Instance(this, "compute", {
             ami: "ami-000001",
             instanceType: "t2.micro",
             keyName: keyPair.keyName,
-            userData: userData.fileName,
-        });
-
-        const goInstance = new Instance(this, "go", {
-            ami: "ami-000002",
-            instanceType: "t2.micro",
         });
 
         new TerraformOutput(this, "ec2_id", {
             value: ec2Instance.id,
-        });
-
-        new TerraformOutput(this, "go_id", {
-            value: goInstance.id,
         });
     }
 }
