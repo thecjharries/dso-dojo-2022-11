@@ -1,15 +1,10 @@
 package test
 
 import (
-	"context"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"testing"
-
-	"github.com/docker/docker/api/types"
-	"github.com/docker/docker/client"
 
 	"github.com/gruntwork-io/terratest/modules/logger"
 	"github.com/gruntwork-io/terratest/modules/terraform"
@@ -32,56 +27,16 @@ func TestTerraformMyStack(t *testing.T) {
 
 	terraform.InitAndApply(t, terraformOptions)
 
-	ec2Id := terraform.Output(t, terraformOptions, "ec2_id")
-	assert.NotEmpty(t, ec2Id, "An instance should have been created")
+	defer terraform.Destroy(t, terraformOptions)
 
-	goId := terraform.Output(t, terraformOptions, "go_id")
-	assert.NotEmpty(t, goId, "An app instance should have been created")
-
-	ctx := context.Background()
-	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
-	assert.NoError(t, err, "Failed to create docker client")
-	defer cli.Close()
-
-	containers, err := cli.ContainerList(ctx, types.ContainerListOptions{})
-	assert.NoError(t, err, "Failed to list containers")
-
-	var sshPort uint16
-	var goPort uint16
-
-	for _, container := range containers {
-		for _, name := range container.Names {
-			if "/localstack-ec2."+ec2Id == name {
-				for _, port := range container.Ports {
-					if port.PrivatePort == 22 {
-						sshPort = port.PublicPort
-						break
-					}
-				}
-			}
-			if "/localstack-ec2."+goId == name {
-				for _, port := range container.Ports {
-					if port.PrivatePort == 22 {
-						goPort = port.PublicPort
-						break
-					}
-				}
-			}
-			if sshPort != 0 && goPort != 0 {
-				break
-			}
-		}
-		if sshPort != 0 && goPort != 0 {
-			break
-		}
-	}
-	logger.Log(t, "sshPort: ", sshPort)
+	ec2Ip := terraform.Output(t, terraformOptions, "ec2_public_ip")
+	assert.NotEmpty(t, ec2Ip, "An instance should have been created")
 
 	privateKey := terraform.Output(t, terraformOptions, "private_key")
 	assert.NotEmpty(t, privateKey, "A private key should exist")
 
-	host := "127.0.0.1:" + fmt.Sprint(sshPort)
-	user := "root"
+	host := ec2Ip
+	user := "ubuntu"
 	pKey := []byte(privateKey)
 
 	signer, err := ssh.ParsePrivateKey(pKey)
@@ -108,7 +63,7 @@ func TestTerraformMyStack(t *testing.T) {
 	logger.Log(t, "Remote hostname: ", string(hostname))
 	assert.NotEmpty(t, string(hostname), "A hostname should exist")
 
-	reponse, err := http.Get("http://localhost:" + fmt.Sprint(goPort) + "/ping")
+	reponse, err := http.Get(ec2Ip + "/ping")
 	assert.NoError(t, err, "Failed to get ping")
 	defer reponse.Body.Close()
 
