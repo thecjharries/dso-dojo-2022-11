@@ -13,7 +13,7 @@ The stated goal was to get [Gin's Quick Start](https://github.com/gin-gonic/gin#
 My initial goal is to do the following
 
 1. Create a build pipeline in GitHub Actions that will create a GitHub Release on tag events.
-2. Use CDKTF to provision LocalStack.
+2. Use CDKTF to provision AWS.
 3. Terratest everything for target state.
 
 Right now I'm not sure about provisioning the the EC2 instance. Keeping with "do the most complicated thing" approach, Packer to create an AMI sounds pretty neat.
