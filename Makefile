@@ -1,4 +1,5 @@
 VERSION=$(shell git describe --abbrev=0 --tags)
+PACKER_FILES=dojo.pkr.hcl
 
 .PHONY: all
 all: test build
@@ -23,3 +24,10 @@ clean:
 .PHONY: act
 act:
 	act
+
+.PHONY: packer
+packer:
+	packer init $(PACKER_FILES)
+	packer fmt $(PACKER_FILES)
+	packer validate $(PACKER_FILES)
+	packer build $(PACKER_FILES)
