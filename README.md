@@ -18,62 +18,8 @@ My initial goal is to do the following
 
 Right now I'm not sure about provisioning the the EC2 instance. Keeping with "do the most complicated thing" approach, Packer to create an AMI sounds pretty neat.
 
-## Usage
-
-### Prerequisites
-
-You'll need a LocalStack Pro (trial) account. You can get one [here](https://localstack.cloud/). You'll also need to export the environment variable.
-
-```bash
-export LOCALSTACK_API_KEY=your-api-key
-```
-
-### Testing
-
-```bash
-cd path/to/repo/root
-
-# For the server itself
-make test
-
-# For the infrastructure as code
-make localstack-start
-make docker-build
-cd terraform
-make prep
-make test
-```
-
-
-
 ## Notes
-
-### Rootless Podman
-
-... is a really bad idea. LocalStack [doesn't exactly support Podman](https://docs.localstack.cloud/localstack/podman/) and requires a ton of fiddling to make happy if you're following a standard Arch rootless setup.
-
-* You really need [an LS profile](https://docs.localstack.cloud/localstack/configuration/#profiles) and
-* you need to understand [the Docker flags](https://docs.localstack.cloud/localstack/configuration/#docker)
-* because you'll probably need to add [this important Podman flag](https://github.com/containers/podman/issues/14284#issuecomment-1130113553).
-
-I gave up and installed Docker on Arch because I spent three hours pulling out my hair. [This issue is the root cause](https://github.com/containers/podman/issues/4900) and seems to have been erroneously closed (or they don't have good regression testing). I did all sorts of things and just couldn't get it to work because of VirtualBox USB `/dev`ices.
-
-### LocalStack Pro Required for Packer
-
-Apparently actually [doing AMI things is behind LocalStack Pro](https://github.com/localstack/localstack/issues/1996). Packer does seem to work pretty well minus that part provided you add this line to your `builder`:
-
-```json
-"custom_endpoint_ec2": "http://localhost:4566"
-```
-
-~~Since one of my goals was to do this without creating any accounts I'll move on for now.~~
 
 ### Lots to learn with CDKTF
 
 Following the CDKTF quick start sets up a stack. Apparently these don't work with [resource assertions](https://github.com/hashicorp/terraform-cdk/issues/1850#issuecomment-1153883827).
-
-### `cloud-init` and Docker
-
-LocalStack isn't running VMs, it's running containers. The containers don't have SystemD, so you can't do things like `systemctl start nginx` and just plain installing `nginx` doesn't do anything. Since they're not standard AMIs, either, you don't actually have `cloud-init` installed and installing it doesn't really do much since we can't do much.
-
-I'm excited with my SSH tomfoolery via Terratest so I'm just going to build another "instance" that's just a simple Go container.
