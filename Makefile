@@ -31,3 +31,8 @@ packer:
 	packer fmt $(PACKER_FILES)
 	packer validate $(PACKER_FILES)
 	packer build $(PACKER_FILES)
+
+.PHONY: dojo
+dojo:
+	$(MAKE) -f ./Makefile packer
+	cd terraform && npm install && $(MAKE) -f ./Makefile test
