@@ -63,10 +63,15 @@ export class DsoDojo202211 extends TerraformStack {
             ami: ami.id,
             instanceType: "t2.micro",
             keyName: keyPair.keyName,
+            associatePublicIpAddress: true,
         });
 
         new TerraformOutput(this, "ec2_id", {
             value: ec2Instance.id,
+        });
+
+        new TerraformOutput(this, "ec2_public_ip", {
+            value: ec2Instance.publicIp,
         });
     }
 }
